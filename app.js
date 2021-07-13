@@ -9,6 +9,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const movies = require('./routes/movies');
 const users = require('./routes/users');
+const routes = require('./routes/index');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -50,6 +51,8 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 app.use('/movies', auth, movies);
 app.use('/users', auth, users);
+
+app.use(routes);
 
 app.use(errorLogger);
 
