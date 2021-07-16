@@ -53,16 +53,14 @@ module.exports.createMovie = (req, res, next) => {
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
+    .orFail(new NotFoundError(`Фильм с указанным _id не найден: ${req.params.movieId}`))
     .then((movie) => {
-      if (!movie) {
-        throw new NotFoundError(`Фильм с указанным _id не найден: ${req.params.cardId}`);
+      if (movie.owner.toString() === req.user._id) {
+        return movie.remove()
+          .then((data) => res.status(200)
+            .send(data));
       }
-      if (movie.owner.toString() !== req.user._id) {
-        throw new Forbidden('Доступ запрещен');
-      }
-      Movie.findByIdAndRemove(req.params.movieId)
-        .then((data) => res.status(200)
-          .send(data));
+      throw new Forbidden('Доступ запрещен');
     })
     .catch((err) => {
       if (err.kind === 'ObjectId' || err.kind === 'CastError') {

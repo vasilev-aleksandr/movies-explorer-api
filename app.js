@@ -12,20 +12,26 @@ const users = require('./routes/users');
 const routes = require('./routes/index');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { validateLogin, validateAddUser } = require('./middlewares/requestValidation');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000 } = process.env;
+const {
+  PORT = 3000,
+  MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb',
+} = process.env;
 const app = express();
 
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect(MONGO_URL, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
 app.use(helmet());
+
+app.use(requestLogger);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -39,16 +45,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(requestLogger);
-
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateLogin, login);
+app.post('/signup', validateAddUser, createUser);
 app.use('/movies', auth, movies);
 app.use('/users', auth, users);
 
