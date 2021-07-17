@@ -57,8 +57,8 @@ module.exports.deleteMovie = (req, res, next) => {
     .then((movie) => {
       if (movie.owner.toString() === req.user._id) {
         return movie.remove()
-          .then((data) => res.status(200)
-            .send(data));
+          .then(() => res.status(200)
+            .send('Фильм удален'));
       }
       throw new Forbidden('Доступ запрещен');
     })
