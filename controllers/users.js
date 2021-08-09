@@ -49,10 +49,10 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(`Пользователь по указанному _id не найден: ${req.params.userId}`);
+        throw new NotFoundError(`Пользователь по указанному _id не найден: ${req.user._id}`);
       }
       res.send({ message: user });
     })
@@ -69,10 +69,10 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     {
       new: true,
       runValidators: true,
