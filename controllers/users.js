@@ -54,7 +54,7 @@ module.exports.getUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError(`Пользователь по указанному _id не найден: ${req.user._id}`);
       }
-      res.send({ message: user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ObjectId' || err.name === 'CastError') {
@@ -83,7 +83,7 @@ module.exports.updateUser = (req, res, next) => {
         throw new NotFoundError(`Пользователь по указанному _id не найден: ${req.params.userId}`);
       }
 
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
