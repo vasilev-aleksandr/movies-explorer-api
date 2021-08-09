@@ -5,7 +5,7 @@ const Forbidden = require('../errors/forbidden-err');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
-    .then((movies) => res.status(200).send(movies))
+    .then((movies) => res.status(200).send(movies.reverse()))
     .catch(next);
 };
 
@@ -58,7 +58,7 @@ module.exports.deleteMovie = (req, res, next) => {
       if (movie.owner.toString() === req.user._id) {
         return movie.remove()
           .then(() => res.status(200)
-            .send('Фильм удален'));
+            .send(movie));
       }
       throw new Forbidden('Доступ запрещен');
     })
